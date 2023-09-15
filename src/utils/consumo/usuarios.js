@@ -43,8 +43,8 @@ const listarUsuarios = async () => {
                 usuario.estado= `<span class="badge badge-success">ACTIVADO</span>`
                 usuario.botones_accion = `
                     <div class="text-center d-flex justify-content-around">
-                        <a href="#" id="btnUpdate" class="btn btn-primary" data-toggle="modal" data-target="#UpdateModal" onclick='verUsuarios(${JSON.stringify(usuario)})'><i class="fas fa-edit"></i></a>
-                        <a href="#" class="btn btn-danger" onclick="eliminarUsuarios('${usuario._id}')"><i class="fas fa-trash-alt"></i></a>
+                        <a href="#" id="btnUpdate" data_id="${usuario._id}" class="btn btn-primary" data-toggle="modal" data-target="#UpdateModal"><i class="fas fa-edit"></i></a>
+                        <a href="#" id="btnDelete" data_id="${usuario._id}" class="btn btn-danger" ><i class="fas fa-trash-alt"></i></a>
                         <a href="#" class="btn btn-warning" data-toggle="modal" data-target="#ShowModal"><i class="fas fa-eye"></i></a>
                     </div>
                 `;
@@ -53,12 +53,35 @@ const listarUsuarios = async () => {
             tabla.clear().draw();
             tabla.rows.add(listaUsuarios).draw(); 
 
+            document.addEventListener('DOMContentLoaded', () => {
+                // Tu código para agregar event listeners aquí
+            });
+
+            document.querySelectorAll('#btnUpdate').forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    const id = event.target.getAttribute('data_id');
+                    console.log(id)
+                    if (id) {
+                        verUsuarios(id);
+                    } else {
+                        // Maneja el caso en el que no se proporciona un ID
+                        console.error('No se proporcionó un ID para ver el usuario.');
+                    }
+                });
+            });
+
+            document.querySelectorAll('#btnDelete').forEach((button) => {
+                button.addEventListener('click', (event)=> {
+                    const id = event.target.getAttribute('data-id')
+                    console.log(id)
+                    eliminarUsuarios(id)
+                })
+            })
             
-            document.getElementById('btnUpdate').
-            addEventListener('click', (event) => {
-                const usuario = JSON.parse(event.target.dataset.usuario)
-                verUsuarios(usuario)
-            }) 
+            
+
+
+            
 
         })
         .catch(function (error) {
@@ -68,18 +91,27 @@ const listarUsuarios = async () => {
 
 // ================================================================
 
-const verUsuarios = (usuarios) => {
+const verUsuarios = async (usuario) => {
 
-    console.log(usuarios)
-    event.preventDefault();
-
-    document.getElementById('txtID').value = usuarios._id
-    document.getElementById('txtNombres').value = usuarios.nombres
-    document.getElementById('txtApellidos').value = usuarios.apellidos
-    document.getElementById('txtUsername').value = usuarios.username
-    document.getElementById('txtCorreo').value= usuarios.correo
-    document.getElementById('selRol').value = usuarios.rol
-        
+    await fetch(`https://backend-valhalla.onrender.com/ruta/usuarios/${usuario}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: { "Content-type": "application/json; charset=UTF-8" }
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const usuario = data.usuarioID; 
+        console.log(data)
+        document.getElementById('txtID').value = usuario._id;
+        document.getElementById('txtNombres').value = usuario.nombres;
+        document.getElementById('txtApellidos').value = usuario.apellidos;
+        document.getElementById('txtUsername').value = usuario.username;
+        document.getElementById('txtCorreo').value = usuario.correo;
+        document.getElementById('selRol').value = usuario.rol;
+    })
+    .catch((error) => {
+        console.log('Error: ', error);
+    });
 }
 
 // ==============================================================
@@ -231,6 +263,49 @@ const modificarUsuarios = async () => {
     }
 
 }
+
+const eliminarUsuarios = (id) => {
+
+    Swal.fire({
+        title: '¿Está seguro de realizar la eliminación?',
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let usuario = {
+                _id: id,
+            };
+            fetch(url, {
+                method: 'DELETE',
+                mode: 'cors',
+                body: JSON.stringify(usuario),
+                headers: { 'Content-type': 'application/json; charset=UTF-8' },
+            })
+            .then((resp) => resp.json())
+            .then((json) => {
+                Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: '¡Usuario Eliminado Exitosamente!',
+                text: json.msg,
+                showConfirmButton: false,
+                timer: 1500
+            })
+            setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+                
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Se produjo un error al eliminar el usuario.', 'error');
+            });
+        }
+    });
+};
 
 
 

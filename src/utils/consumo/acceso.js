@@ -2,6 +2,8 @@
 import * as valid from '../validations/expresiones.mjs';
 import * as alert from '../validations/alertas.mjs';
 
+
+//Funcion Validar Acceso Login
 const validarAcceso = () => {
 
     const campos = [
@@ -68,6 +70,7 @@ const validarAcceso = () => {
 // Funcion Recuperar Contraseña
 const recuperarPassword = () => {
 
+    // Campos Validar Input
     const campos = [
         { 
             id: 'txtCorreo',
@@ -218,7 +221,6 @@ const validarRegistro = async () => {
 }
 
 
-
 // Eventos Botones Funciones Acceso
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -243,5 +245,4 @@ document.addEventListener("DOMContentLoaded", function () {
             validarAcceso();
         })
     }
-
 });

@@ -1,8 +1,15 @@
-/*!
+/*!background
  * FullCalendar v3.9.0
  * Docs & License: https://fullcalendar.io/
  * (c) 2018 Adam Shaw
  */
+ /* Cambiar el color de fondo del thead a azul */
+.fc table thead th{
+  background-color:#70aebdc8;
+}
+.fc table td{
+  background-color: #f8f8f8c8;
+}
 .fc button,
 .fc table,
 body .fc {
@@ -51,6 +58,7 @@ body .fc {
   padding: 0 0.6em;
   white-space: nowrap;
   cursor: pointer;
+  background-color: #70aebdc8;
 }
 .fc button::-moz-focus-inner {
   margin: 0;
@@ -472,8 +480,9 @@ a.fc-more:hover {
 .fc-unthemed td,
 .fc-unthemed th,
 .fc-unthemed thead {
-  border-color: #ddd;
+  border-color: #000000;
 }
+
 .fc-unthemed .fc-popover {
   background-color: #fff;
   border-width: 1px;
@@ -482,7 +491,7 @@ a.fc-more:hover {
 .fc-unthemed .fc-divider,
 .fc-unthemed .fc-list-heading td,
 .fc-unthemed .fc-popover .fc-header {
-  background: #eee;
+  background: #6b0202;
 }
 .fc-unthemed td.fc-today {
   background: #fcf8e3;

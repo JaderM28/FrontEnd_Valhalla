@@ -193,19 +193,19 @@ const modificarRoles = async () => {
     const campos = [
         { 
             id: 'txtNombre', 
-            label: 'Nombre del Rol', 
+            label: 'Nombre', 
             msg: 'el campo debe contener solo letras o caracteres.',
             validacion: valid.validarNombre 
         },
         { 
             id: 'txtDescripcion', 
-            label: 'Descripcion del Rol',
+            label: 'Descripcion',
             msg: 'el campo debe contener solo letras.',
             validacion: valid.validarTextArea
         },
         { 
             id: 'txtPermisos', 
-            label: 'Permisos del Rol',
+            label: 'Permisos',
             msg: 'el campo debe contener solo letras.',
             validacion: valid.validarRol
         }

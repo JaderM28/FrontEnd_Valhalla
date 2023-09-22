@@ -110,11 +110,33 @@ function cambiarEstado(userId, newEstado) {
 const crearServicios = async () => {
 
     const campos = [
-        { id: 'txtNombre', label: 'Nombres', validacion: valid.validarNombre },
-        { id: 'txtDuracion', label: 'Duracion', validacion: valid.validar},
-        { id: 'txtPrecio', label: 'Precio', validacion: valid.validarPrecio},
-        { id: 'selCategoria', label: 'Categoria', validacion: valid.validarCategoria},
-        { id: 'txtDescripcion', label: 'Descripcion', validacion: valid.validarDescripcion}
+        { 
+            id: 'txtNombre', 
+            label: 'Nombres',
+            msg: 'el campo debe contener solo letras o caracteres.', 
+            validacion: valid.validarNombre
+        },
+        { 
+            id: 'txtDuracion', 
+            label: 'Duracion',
+            msg: 'el campo debe contener un formato valido de tiempo ejemplo(1:00 o 22:00).', 
+            validacion: valid.validarDuracion
+        },
+        { 
+            id: 'txtPrecio', 
+            label: 'Precio',
+            msg: 'el campo debe contener solo numeros, punto y decimales', 
+            validacion: valid.validarPrecio
+        },
+        { 
+            id: 'selCategoria', 
+            label: 'Categoria'},
+        { 
+            id: 'txtDescripcion', 
+            label: 'Descripcion',
+            msg: 'el campo debe contener solo letras o caracteres.', 
+            validacion: valid.validarTextArea
+        }
     ];
 
     if (!alert.validarCampos(campos)) {
@@ -175,15 +197,15 @@ const modificarServicios = async () => {
 
     const campos = [
         {
-             id: 'txtNombre', 
-             label: 'Nombres', 
-             msg: 'el campo debe contener solo letras o caracteres.',
-             validacion: valid.validarNombre 
+            id: 'txtNombre', 
+            label: 'Nombres', 
+            msg: 'el campo debe contener solo letras o caracteres.',
+            validacion: valid.validarNombre 
         },
         { 
             id: 'txtDuracion', 
             label: 'Duracion',
-            msg: 'el campo debe contener solo letras o caracteres.',  
+            msg: 'el campo debe contener un formato valido de tiempo (1:00 o 22:00).',  
             validacion: valid.validarDuracion
         },
         { 

@@ -20,6 +20,13 @@ router.get('/register', (req, res) => {
     })
 })
 
+router.get('/forgot', (req, res) => {
+    res.render('acceso/forgot-password', {
+        login: false
+    })
+})
+
+
 router.get('/panelAdministrativo', (req, res) => {
     res.render('index', {
         global: true,

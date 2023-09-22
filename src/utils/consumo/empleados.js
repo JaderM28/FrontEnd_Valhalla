@@ -82,44 +82,44 @@ const modificarEmpleados = async () => {
 
     const campos = [
         {
-             id: 'txtNombres', 
-             label: 'Nombres', 
-             msg: 'el campo debe contener solo letras o caracteres.',
-             validacion: valid.validarNombre 
+            id: 'txtNombres', 
+            label: 'Nombres', 
+            msg: 'el campo debe contener solo letras o caracteres.',
+            validacion: valid.validarNombre 
         },
         {
-             id: 'txtApellidos', 
-             label: 'Apellidos',
-             msg: 'el campo debe contener solo letras o caracteres.', 
-             validacion: valid.validarApellido 
+            id: 'txtApellidos', 
+            label: 'Apellidos',
+            msg: 'el campo debe contener solo letras o caracteres.', 
+            validacion: valid.validarApellido 
         },
         {
-             id: 'txtTelefono', 
-             label: 'Telefono',
-             msg: 'el campo debe contener al menos 10 numeros.', 
-             validacion: valid.validarTelefono
+            id: 'txtTelefono', 
+            label: 'Telefono',
+            msg: 'el campo debe contener al menos 10 numeros.', 
+            validacion: valid.validarTelefono
         },
         {
-             id: 'selDocumento', 
-             label: 'Tipo Documento'
+            id: 'selDocumento', 
+            label: 'Tipo Documento'
         },
         {
-             id: 'txtNumDocumento', 
-             label: 'Numero Documento',
-             msg: 'el campo debe contener al menos 10 numeros.', 
-             validacion: valid.validarDocumento
+            id: 'txtNumDocumento', 
+            label: 'Numero Documento',
+            msg: 'el campo debe contener al menos 10 numeros.', 
+            validacion: valid.validarDocumento
         },
         {
-             id: 'txtGenero', 
-             label: 'Genero',
-             msg: 'el campo debe contener solo letras.', 
-             validacion: valid.validarGenero
+            id: 'txtGenero', 
+            label: 'Genero',
+            msg: 'el campo debe contener solo letras.', 
+            validacion: valid.validarGenero
         },
         {
-             id: 'txtDireccion', 
-             label: 'Direccion',
-             msg: 'el campo debe contener solo letras o caracteres.', 
-             validacion: valid.validarDireccion
+            id: 'txtDireccion', 
+            label: 'Direccion',
+            msg: 'el campo debe contener solo letras o caracteres.', 
+            validacion: valid.validarDireccion
         }
     ];
 

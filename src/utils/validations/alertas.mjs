@@ -26,7 +26,7 @@ export const validarCampos = (campos) => {
             mostrarError(campo.id, `Por favor, complete el campo ${campo.label}.`);
             return false;
         } else if (campo.validacion && !campo.validacion(valor)) {
-            mostrarError(campo.id, `Por favor, ${campo.msg}`);
+            mostrarError(campo.id, `Error, ${campo.msg}`);
             return false;
         } else {
             limpiarError(campo.id);

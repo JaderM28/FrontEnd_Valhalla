@@ -58,10 +58,12 @@ export const validarPrecio = (precio) => {
     const result = /^\d+(\.\d{1,3})?$/;
     return result.test(precio);
 }
+
 export const validarDuracion = (duracion) => {
     const result = /^\d+:\d+$/;
     return result.test(duracion);
 }
+
 export const validarRol = (rol) => {
     const result = /^[A-Za-z]+$/;
     return result.test(rol)

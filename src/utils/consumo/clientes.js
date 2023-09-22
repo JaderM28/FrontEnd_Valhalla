@@ -1,8 +1,12 @@
 import * as valid from '../validations/expresiones.mjs';
 import * as alert from '../validations/alertas.mjs';
 
+// Consumir Url API
 const url = 'https://backend-valhalla.onrender.com/ruta/clientes';
 
+// ======= LISTAR ===============
+
+// Funcion Listar Datos Clientes
 const listarClientes = async () => {
     const tabla = $('#dataTable').DataTable({
 
@@ -45,7 +49,7 @@ const listarClientes = async () => {
         tabla.clear().draw();
         tabla.rows.add(listaClientes).draw(); 
 
-        // Borrar Usuario
+        // Borrar Datos Cliente
         tabla.on('click', '#btnDelete', function (event) {
             event.preventDefault()
             const button = this
@@ -53,6 +57,7 @@ const listarClientes = async () => {
             eliminarClientes(clieID)
         })
 
+        // Evento Datos Modal
         tabla.on('click', '#btnUpdate', function () {
             const button = this
             const clieID = button.getAttribute('data-index');
@@ -65,9 +70,9 @@ const listarClientes = async () => {
     });
 }
 
+// ========= Modificar ========================
 
-
-
+// Funcion Modificar Clientes
 const modificarClientes = async () => {
 
     const campos = [
@@ -153,7 +158,7 @@ const modificarClientes = async () => {
         })
         .catch((error) => {
             
-            console.error('Error al registrar usuario:', error);
+            console.error('Error al Registrar Cliente:', error);
             Swal.fire({
                 position: 'center',
                 icon: 'error',
@@ -168,8 +173,9 @@ const modificarClientes = async () => {
 
 }
 
-// ============================================
+// ========= ELIMINAR ===================================
 
+// Funcion Eliminar Datos Cliente
 const eliminarClientes = (id) => {
     
     Swal.fire({
@@ -225,8 +231,9 @@ const eliminarClientes = (id) => {
     });
 };
 
-// ==============================
+// ========= LISTAR =====================
 
+// Funcion Ver Clientes
 const verClientes = async (cliente) => {
 
     await fetch(`https://backend-valhalla.onrender.com/ruta/clientes/${cliente}`, {
@@ -252,7 +259,7 @@ const verClientes = async (cliente) => {
     });
 }
 
-
+// ========= EVENTOS ===============================
 
 // Eventos JavaScript CLientes
 
@@ -324,7 +331,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         })
-
 
     }
 

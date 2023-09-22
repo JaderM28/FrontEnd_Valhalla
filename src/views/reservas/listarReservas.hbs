@@ -17,25 +17,15 @@
                 <div class="card bg-light">
                     <div class="card-body">
                         <div class="card-title">
-                            <h4>Calendario Reservas</h4>
+                            <h4>Reservas</h4>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-4 mt-5">
-                                <a href="#" data-toggle="modal" data-target="#add-category" class="btn btn-primary btn-block"><i class="ti-plus f-s-12 m-r-5"></i> Crear Evento</a>
-                                <div id="external-events" class="mt-5">
-                                    
-                                </div>
-                                <!-- checkbox -->
-                                <div class="checkbox m-t-40">
-                                    <input id="drop-remove" type="checkbox">
-                                    <label for="drop-remove">Eliminar Eventos</label>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-box m-b-50">
+                        <div class="row" >
+                            <div class="col-lg-12 mt-5 mb-5">
+                                <div class="card-box m-b-50" >
                                     <div id="calendar"></div>
                                 </div>
                             </div>
+                            
                             <!-- end col -->
                             <!-- BEGIN MODAL -->
                             <div class="modal fade none-border" id="event-modal">
@@ -66,6 +56,7 @@
                                                     <div class="col-md-6">
                                                         <label class="control-label">Nombre Reserva</label>
                                                         <input class="form-control form-white" placeholder="Enter name" type="text" name="category-name">
+                                                        
                                                     </div>
                                                     <div class="col-md-6">
                                                         <label class="control-label">Color Reserva</label>

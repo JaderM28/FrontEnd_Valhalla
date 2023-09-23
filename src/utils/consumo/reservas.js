@@ -1,4 +1,4 @@
-// Escuchar el evento de clic en el botón "Create event"
+// Evento Guardar Reserva
 document.querySelector('.save-event').addEventListener('click', function () {
   // Muestra un SweetAlert de éxito
   Swal.fire({
@@ -9,6 +9,7 @@ document.querySelector('.save-event').addEventListener('click', function () {
   });
 });
 
+// Evento Eliminar Reserva
 document.querySelector('.delete-event').addEventListener('click', function () {
   // Muestra un SweetAlert de éxito
   Swal.fire({
@@ -19,6 +20,7 @@ document.querySelector('.delete-event').addEventListener('click', function () {
   });
 });
 
+// Evento Guardar Cambios Reserva
 document.querySelector('.save-event').addEventListener('click', function () {
   // Muestra un SweetAlert de éxito
   Swal.fire({

@@ -1,10 +1,10 @@
 import * as valid from '../validations/expresiones.mjs';
 import * as alert from '../validations/alertas.mjs';
 
-// Consumir Url API
+// Se crea la constante con la Url del API
 const url = 'https://backend-valhalla.onrender.com/ruta/clientes';
 
-// ======= LISTAR ===============
+// ======================= LISTAR ===================================
 
 // Funcion Listar Datos Clientes
 const listarClientes = async () => {
@@ -49,7 +49,7 @@ const listarClientes = async () => {
         tabla.clear().draw();
         tabla.rows.add(listaClientes).draw(); 
 
-        // Borrar Datos Cliente
+        // Evento Borrar Datos Cliente
         tabla.on('click', '#btnDelete', function (event) {
             event.preventDefault()
             const button = this
@@ -57,7 +57,7 @@ const listarClientes = async () => {
             eliminarClientes(clieID)
         })
 
-        // Evento Datos Modal
+        // Evento Modificar Datos Modal
         tabla.on('click', '#btnUpdate', function () {
             const button = this
             const clieID = button.getAttribute('data-index');
@@ -70,7 +70,35 @@ const listarClientes = async () => {
     });
 }
 
-// ========= Modificar ========================
+// ======================= LISTAR MODAL ===================================
+
+// Funcion Ver Clientes
+const verClientes = async (cliente) => {
+
+    await fetch(`https://backend-valhalla.onrender.com/ruta/clientes/${cliente}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: { "Content-type": "application/json; charset=UTF-8" }
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const cliente = data.clienteID; 
+        console.log(cliente)
+        document.getElementById('txtID').value = cliente._id
+        document.getElementById('txtNombres').value = cliente.nombres
+        document.getElementById('txtApellidos').value = cliente.apellidos
+        document.getElementById('txtTelefono').value = cliente.telefono
+        document.getElementById('selDocumento').value = cliente.tipoDocumento
+        document.getElementById('txtNumDocumento').value = cliente.numeroDocumento
+        document.getElementById('txtGenero').value = cliente.genero
+        document.getElementById('txtDireccion').value = cliente.direccion
+    })
+    .catch((error) => {
+        console.log('Error: ', error);
+    });
+}
+
+// ======================= MODIFICAR ===================================
 
 // Funcion Modificar Clientes
 const modificarClientes = async () => {
@@ -173,7 +201,7 @@ const modificarClientes = async () => {
 
 }
 
-// ========= ELIMINAR ===================================
+// ======================= ELIMINAR ===================================
 
 // Funcion Eliminar Datos Cliente
 const eliminarClientes = (id) => {
@@ -231,57 +259,31 @@ const eliminarClientes = (id) => {
     });
 };
 
-// ========= LISTAR =====================
-
-// Funcion Ver Clientes
-const verClientes = async (cliente) => {
-
-    await fetch(`https://backend-valhalla.onrender.com/ruta/clientes/${cliente}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: { "Content-type": "application/json; charset=UTF-8" }
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        const cliente = data.clienteID; 
-        console.log(cliente)
-        document.getElementById('txtID').value = cliente._id
-        document.getElementById('txtNombres').value = cliente.nombres
-        document.getElementById('txtApellidos').value = cliente.apellidos
-        document.getElementById('txtTelefono').value = cliente.telefono
-        document.getElementById('selDocumento').value = cliente.tipoDocumento
-        document.getElementById('txtNumDocumento').value = cliente.numeroDocumento
-        document.getElementById('txtGenero').value = cliente.genero
-        document.getElementById('txtDireccion').value = cliente.direccion
-    })
-    .catch((error) => {
-        console.log('Error: ', error);
-    });
-}
-
 // ========= EVENTOS ===============================
 
-// Eventos JavaScript CLientes
+// Eventos Botones CLientes
 
 document.addEventListener("DOMContentLoaded", function () {
 
     const PageUrl = window.location.href;
 
-    // Verificar si la URL contiene "listarusuarios"
+    // Comprueba la URL listar Clientes
     if (PageUrl.includes("/listarClientes")) {
         listarClientes();
 
-
+        //Evento Resetear Formulario
         document.getElementById('btnMdReset').
         addEventListener('click', () => {
             document.getElementById('formModificar').reset()
         })
 
+        //Evento Confirmar Modificacion Datos 
         document.getElementById('btnMdGuardar').
         addEventListener('click', () => {
             modificarClientes()
         })
 
+        //Evento Generar Reporte Datos Cliente
         document.getElementById('btnGenerar').
         addEventListener('click', (event) => {
             event.preventDefault()
@@ -307,6 +309,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         })
 
+        //Evento Generar Reporte Datos Cliente
         document.getElementById('btnExcel').
         addEventListener('click', (event) => {
             event.preventDefault()
@@ -331,9 +334,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         })
-
     }
-
 });
 
 

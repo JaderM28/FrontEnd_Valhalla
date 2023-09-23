@@ -1,8 +1,12 @@
 import * as valid from '../validations/expresiones.mjs';
 import * as alert from '../validations/alertas.mjs';
 
+// Se crea la constante con la Url del API
 const url = 'https://backend-valhalla.onrender.com/ruta/categorias';
 
+// ======================= LISTAR ===================================
+
+// Funcion Listar Categorias
 const listarCategorias = async () => {
     const tabla = $('#dataTable').DataTable({
 
@@ -93,8 +97,34 @@ const listarCategorias = async () => {
     });
 }
 
-// ================================================================
-// Función para cambiar el estado de la categoria
+// ======================= LISTAR MODAL ===================================
+
+// Funcion Ver Datos Modal
+const verCategorias = async (categoria) => {
+
+    await fetch(url+`/${categoria}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: { "Content-type": "application/json; charset=UTF-8" }
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const categorias = data.categoriaID; 
+        console.log(categorias)
+        document.getElementById('txtID').value = categorias._id
+        document.getElementById('txtNombre').value = categorias.nombre
+        document.getElementById('txtCodigo').value = categorias.codigoCategoria
+        document.getElementById('txtDescripcion').value = categorias.descripcion
+        document.getElementById('txtObservaciones').value = categorias.observaciones
+    })
+    .catch((error) => {
+        console.log('Error: ', error);
+    });
+}
+
+// ======================= CAMBIAR ESTADO ===================================
+
+// Funcion Cambiar Estado Categorias
 function cambiarEstado(userId, newEstado) {
 
     const categorias = {
@@ -108,10 +138,15 @@ function cambiarEstado(userId, newEstado) {
         body: JSON.stringify(categorias),
         headers: { 'Content-type': 'application/json; charset=UTF-8' },
     })
+    .catch((error) => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Se produjo un error al cambiar estado usuario.', 'error');
+    });
 }    
 
-// FUNCION PARA CAMBIAR EL BOTON AL HACER CLICK
+// ======================= CREAR ===================================
 
+// Funcion Crear Categorias
 const crearCategorias = async () => {
 
     const campos = [
@@ -192,9 +227,9 @@ const crearCategorias = async () => {
 
 }
 
-// =============================================================================
+// ======================= MODIFICAR ===================================
 
-
+// Funcion Modificar Categorias
 const modificarCategorias = async () => {
 
     const campos = [
@@ -242,42 +277,42 @@ const modificarCategorias = async () => {
             body: JSON.stringify(categorias),
             headers: { 'Content-type': 'application/json; charset=UTF-8' },
         })
-            .then((resp) => resp.json())
-            .then((json) => {
-                if (json.msg) {
+        .then((resp) => resp.json())
+        .then((json) => {
+            if (json.msg) {
 
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: '¡Modificación Exitosa!',
-                        text: json.msg,
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                    setTimeout(() => {
-                        window.location.href = '/listarCategorias';
-                    }, 2000);
-                }
-            })
-            .catch((error) => {
-                
-                console.error('Error al registrar categoria:', error);
                 Swal.fire({
                     position: 'center',
-                    icon: 'error',
-                    title: '¡Error al Registrar Categoría!',
-                    text: 'No se pudo procesar la solicitud, Inténtelo nuevamente.',
+                    icon: 'success',
+                    title: '¡Modificación Exitosa!',
+                    text: json.msg,
                     showConfirmButton: false,
                     timer: 1500
                 })
-                window.location.reload();
-            });
+                setTimeout(() => {
+                    window.location.href = '/listarCategorias';
+                }, 2000);
+            }
+        })
+        .catch((error) => {
+            
+            console.error('Error al registrar categoria:', error);
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: '¡Error al Registrar Categoría!',
+                text: 'No se pudo procesar la solicitud, Inténtelo nuevamente.',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            window.location.reload();
+        });
     }
-
 }
 
-// =======================================
+// ======================= ELIMINAR ===================================
 
+// Funcion Eliminar Categorias
 const eliminarCategorias = (id) => {
     
     Swal.fire({
@@ -309,8 +344,8 @@ const eliminarCategorias = (id) => {
                 timer: 1500
             })
             setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
+                window.location.reload();
+            }, 2000);
                 
             })
             .catch((error) => {
@@ -324,78 +359,58 @@ const eliminarCategorias = (id) => {
                     timer: 1500
                 })
                 setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                    
-                
+                    window.location.reload();
+                }, 2000);
+                        
             });
         }
     });
 };
 
-const verCategorias = async (categoria) => {
+// ======================= EVENTOS ===================================
 
-    await fetch(url+`/${categoria}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: { "Content-type": "application/json; charset=UTF-8" }
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        const categorias = data.categoriaID; 
-        console.log(categorias)
-        document.getElementById('txtID').value = categorias._id
-        document.getElementById('txtNombre').value = categorias.nombre
-        document.getElementById('txtCodigo').value = categorias.codigoCategoria
-        document.getElementById('txtDescripcion').value = categorias.descripcion
-        document.getElementById('txtObservaciones').value = categorias.observaciones
-    })
-    .catch((error) => {
-        console.log('Error: ', error);
-    });
-}
-
-
-
-// Eventos JavaScript CLientes
-
+// Eventos Botones Categorias
 document.addEventListener("DOMContentLoaded", function () {
 
     const PageUrl = window.location.href;
 
-    // Verificar si la URL contiene "listarusuarios"
+    // Comprueba la URL listar Categorias
     if (PageUrl.includes("/listarCategorias")) {
-        
+
+        // Se llama funcion listar Categorias
         listarCategorias();
 
-
+        // Evento Resetear Formulario
         document.getElementById('btnMdReset').
         addEventListener('click', () => {
             document.getElementById('formModificar').reset()
         })
 
+        // Evento Confimrar Modificacion Datos 
         document.getElementById('btnMdGuardar').
         addEventListener('click', () => {
             modificarCategorias()
         })
 
-
-
     }
 
+    // Comprueba la URL Crear Categorias
     if(PageUrl.includes("/crearCategorias")){
 
+        // Evento Guardar Datos Formulario
         document.getElementById('btnGuardar').
         addEventListener('click', () => {
             crearCategorias();
         })
 
+        // Evento Resetear Datos Formulario
         document.getElementById('btnReset').
         addEventListener('click', (event) => {
             event.preventDefault()
             document.getElementById('formModificar').reset()
         })
 
+        // Evento Salir del Formulario
         document.getElementById('btnCancelar').
         addEventListener('click', (event) => {
             event.preventDefault()

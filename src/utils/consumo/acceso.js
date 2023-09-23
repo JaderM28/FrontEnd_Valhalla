@@ -2,6 +2,7 @@
 import * as valid from '../validations/expresiones.mjs';
 import * as alert from '../validations/alertas.mjs';
 
+// ======================= COMPROBAR LOGIN ===================================
 
 //Funcion Validar Acceso Login
 const validarAcceso = () => {
@@ -67,6 +68,8 @@ const validarAcceso = () => {
 
 }
 
+// ======================= RECUPERAR ===================================
+
 // Funcion Recuperar Contraseña
 const recuperarPassword = () => {
 
@@ -107,6 +110,8 @@ const recuperarPassword = () => {
         }, 2500);
     }
 }
+
+// ======================= COMPROBAR REGISTRO ===================================
 
 // Funcion Validar Registro de Usuario
 const validarRegistro = async () => {
@@ -220,18 +225,21 @@ const validarRegistro = async () => {
 
 }
 
+// ======================= EVENTOS ===================================
 
-// Eventos Botones Funciones Acceso
+// Eventos Botones Acceso
 document.addEventListener("DOMContentLoaded", function () {
 
     const PageUrl = window.location.href;
     
+    // Comprueba la URL Register
     if (PageUrl.includes("/register")){
         document.getElementById('btnRcontinuar').
         addEventListener('click', (event) => {
             event.preventDefault()
             validarRegistro()
         })
+    // Comprueba la URL Forgot
     }else if(PageUrl.includes("/forgot")){
         document.getElementById('btnFContinuar').
         addEventListener('click', (event) => {

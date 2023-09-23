@@ -1,16 +1,20 @@
 import * as valid from '../validations/expresiones.mjs';
 import * as alert from '../validations/alertas.mjs';
 
+// Se crea la constante con la Url del Api
 const url = 'https://backend-valhalla.onrender.com/ruta/servicios';
 
+// ======================= LISTAR ===================================
+
+// Funcion listar Servicios
 const listarServicios = async () => {
     const tabla = $('#dataTable').DataTable({
 
         "bProcessing": true, // Habilita la pantalla de carga
-        "serverSide": false, // Puedes cambiar esto según tus necesidades
+        "serverSide": false, // Puedes cambiar esto segun tus necesidades
 
         "columns": [
-            { "data": "index" }, // Índice autoincremental
+            { "data": "index" }, // Indice autoincremental
             { "data": "nombre" },
             { "data": "duracion" },
             { "data": "precio" },
@@ -37,7 +41,8 @@ const listarServicios = async () => {
                 servicio.estado =`<i class="fas fa-toggle-on fa-2x text-success" id="cambiar-estado" data-index="${servicio._id}" data-estado="${servicio.estado}"></i>`;
             } else {
                 servicio.estado =`<i class="fas fa-toggle-on fa-rotate-180 fa-2x text-danger" id="cambiar-estado" data-index="${servicio._id}" data-estado="${servicio.estado}"></i>`;
-            }     
+            }   
+            // Se insertan los botones de acciones  
             servicio.botones_accion = `
                 <div class="text-center d-flex justify-content-around">
                     <a href="#" class="btn btn-primary" id="btnUpdate" data-index="${servicio._id}" data-toggle="modal" data-target="#UpdateModal"><i class="fas fa-edit"></i></a>
@@ -47,6 +52,7 @@ const listarServicios = async () => {
             `;
         });
 
+        // Se Listan las Filas Servicios
         tabla.clear().draw();
         tabla.rows.add(listaServicios).draw(); 
 
@@ -70,13 +76,14 @@ const listarServicios = async () => {
             cambiarEstado(userId, currentEstado);
         })
 
-        // Borrar Usuario
+        // Evento Borrar Datos Usuarios
         tabla.on('click', '#btnDelete', function () {
             const button = this
             const servID = button.getAttribute('data-index');
             eliminarServicios(servID)
         })
 
+         // Evento Modificar Datos Usuarios
         tabla.on('click', '#btnUpdate', function () {
             const button = this
             const servID = button.getAttribute('data-index');
@@ -89,8 +96,10 @@ const listarServicios = async () => {
         console.error('Error:', error);
     });
 }
-// =============================================================================
-// Función para cambiar el estado del servicio
+
+// ======================= CAMBIAR DATOS ===================================
+
+// Funcion Cambiar Estado Servicios
 function cambiarEstado(userId, newEstado) {
 
     const servicios = {
@@ -104,9 +113,41 @@ function cambiarEstado(userId, newEstado) {
         body: JSON.stringify(servicios),
         headers: { 'Content-type': 'application/json; charset=UTF-8' },
     })
-}    
-// =============================================================================
+    .catch((error) => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Se produjo un error al cambiar estado servicios', 'error');
+    });
+} 
 
+// ======================= LISTAR MODAL ===================================
+
+// Funcion Ver Servicios
+const verServicios = async (servicio) => {
+
+    await fetch(url+`/${servicio}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: { "Content-type": "application/json; charset=UTF-8" }
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const servicios = data.servicioID; 
+        console.log(servicios)
+        document.getElementById('txtID').value = servicios._id
+        document.getElementById('txtNombre').value = servicios.nombre
+        document.getElementById('txtDuracion').value = servicios.duracion
+        document.getElementById('txtPrecio').value = servicios.precio
+        document.getElementById('selCategoria').value = servicios.categoria
+        document.getElementById('txtDescripcion').value = servicios.descripcion
+    })
+    .catch((error) => {
+        console.log('Error: ', error);
+    });
+}
+
+// ======================= CREAR ===================================
+
+// Funcion Crear Servicios
 const crearServicios = async () => {
 
     const campos = [
@@ -139,6 +180,7 @@ const crearServicios = async () => {
         }
     ];
 
+    // Comprueba las validaciones de los campos
     if (!alert.validarCampos(campos)) {
         return;
     }else{
@@ -157,42 +199,42 @@ const crearServicios = async () => {
             body: JSON.stringify(servicios),
             headers: { 'Content-type': 'application/json; charset=UTF-8' },
         })
-            .then((resp) => resp.json())
-            .then((json) => {
-                if (json.msg) {
+        .then((resp) => resp.json())
+        .then((json) => {
+            if (json.msg) {
 
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: '¡Registro Exitoso!',
-                        text: json.msg,
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                    setTimeout(() => {
-                        window.location.href = '/listarServicios';
-                    }, 2000);
-                }
-            })
-            .catch((error) => {
-                
-                console.error('Error al registrar el servicio:', error);
                 Swal.fire({
                     position: 'center',
-                    icon: 'error',
-                    title: '¡Error al Registrar el Servicio!',
-                    text: 'No se pudo procesar la solicitud, Inténtelo nuevamente.',
+                    icon: 'success',
+                    title: '¡Registro Exitoso!',
+                    text: json.msg,
                     showConfirmButton: false,
                     timer: 1500
                 })
-                window.location.reload();
-            });
+                setTimeout(() => {
+                    window.location.href = '/listarServicios';
+                }, 2000);
+            }
+        })
+        .catch((error) => {
+            
+            console.error('Error al registrar el servicio:', error);
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: '¡Error al Registrar el Servicio!',
+                text: 'No se pudo procesar la solicitud, Inténtelo nuevamente.',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            window.location.reload();
+        });
     }
-
 }
 
-// =============================================================================
+// ======================= MODIFICAR ===================================
 
+// Funcion Modificar Servicios
 const modificarServicios = async () => {
 
     const campos = [
@@ -226,6 +268,7 @@ const modificarServicios = async () => {
     }
     ];
 
+    // Comprueba las validaciones de los campos
     if (!alert.validarCampos(campos)) {
         return;
     }else{
@@ -278,6 +321,9 @@ const modificarServicios = async () => {
     }
 }
 
+// ======================= MODIFICAR ===================================
+
+// Funcion Eliminar Servicios
 const eliminarServicios = (id) => {
 
     Swal.fire({
@@ -324,9 +370,8 @@ const eliminarServicios = (id) => {
                     timer: 1500
                 })
                 setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                    
+                    window.location.reload();
+                }, 2000);
                 
             });
         }
@@ -334,65 +379,48 @@ const eliminarServicios = (id) => {
 };
 
 
-const verServicios = async (servicio) => {
 
-    await fetch(url+`/${servicio}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: { "Content-type": "application/json; charset=UTF-8" }
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        const servicios = data.servicioID; 
-        console.log(servicios)
-        document.getElementById('txtID').value = servicios._id
-        document.getElementById('txtNombre').value = servicios.nombre
-        document.getElementById('txtDuracion').value = servicios.duracion
-        document.getElementById('txtPrecio').value = servicios.precio
-        document.getElementById('selCategoria').value = servicios.categoria
-        document.getElementById('txtDescripcion').value = servicios.descripcion
-    })
-    .catch((error) => {
-        console.log('Error: ', error);
-    });
-}
+// ======================= EVENTOS ===================================
 
-
-
-// Eventos JavaScript CLientes
-
+// Eventos Botones Servicios
 document.addEventListener("DOMContentLoaded", function () {
 
     const PageUrl = window.location.href;
 
-    // Verificar si la URL contiene "listarusuarios"
+    // Comprueba la URL listar Servicios
     if (PageUrl.includes("/listarServicios")) {
         listarServicios();
 
+        // Evento Resetear Formulario
         document.getElementById('btnMdReset').
         addEventListener('click', () => {
             document.getElementById('formModificar').reset()
         })
 
+        // Evento Confimrar Modificacion Datos 
         document.getElementById('btnMdGuardar').
         addEventListener('click', () => {
             modificarServicios()
         })
     }
 
+    // Comprueba la URL Crear Servicios
     if(PageUrl.includes("/crearServicios")){
 
+        // Evento Guardar Datos Servicios
         document.getElementById('btnGuardar').
         addEventListener('click', () => {
             crearServicios();
         })
 
+        // Evento Resetear Datos Formulario
         document.getElementById('btnReset').
         addEventListener('click', (event) => {
             event.preventDefault()
             document.getElementById('formModificar').reset()
         })
 
+        // Evento Salir del Formulario
         document.getElementById('btnCancelar').
         addEventListener('click', (event) => {
             event.preventDefault()

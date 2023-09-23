@@ -1,16 +1,19 @@
 import * as valid from '../validations/expresiones.mjs';
 import * as alert from '../validations/alertas.mjs';
 
-// Se defina la ruta del Api
+// Se crea la constante con la Url del API
 const url = 'https://backend-valhalla.onrender.com/ruta/empleados';
 
-// Se crea la funcion ListarEmpleados la cual consume el (Api Ruta Empleados)
+// ======================= LISTAR ===================================
+
+// Funcion Listar Empleados 
 const listarEmpleados = async () => {
     const tabla = $('#dataTable').DataTable({
 
         "bProcessing": true, // Habilita la pantalla de carga
         "serverSide": false, 
-// Se determinan las columnas que se van a insertar en  la tabla 
+
+        // Se determinan las columnas que se van a insertar en  la tabla 
         "columns": [
             { "data": "index" },
             { "data": "numeroDocumento" },
@@ -48,6 +51,7 @@ const listarEmpleados = async () => {
             tabla.clear().draw();
             tabla.rows.add(listaEmpleados).draw(); 
 
+            // Evento Borrar Datos Empleados
             tabla.on('click', '#btnDelete', function (event){
                 event.preventDefault()
                 const button = this
@@ -55,6 +59,7 @@ const listarEmpleados = async () => {
                 eliminarEmpleados(empleID)
             })
 
+            // Evento Ver Servicios Datos Empleados
             tabla.on('click', '#btnServicios', function () {
                 const button = this
                 const empleID = button.getAttribute('data-index');
@@ -62,6 +67,7 @@ const listarEmpleados = async () => {
                 verServicios(empleID)
             })
 
+            // Evento Modificar Datos Empleados
             tabla.on('click', '#btnUpdate', function () {
                 const button = this
                 const empleID = button.getAttribute('data-index');
@@ -69,6 +75,7 @@ const listarEmpleados = async () => {
                 verModal(empleID)
             })
 
+            // Evento Ver Datos Empleados
             tabla.on('click', '#btnVer', function () {
                 const button = this
                 const empleID = button.getAttribute('data-index');
@@ -82,9 +89,92 @@ const listarEmpleados = async () => {
         });
 }
 
-// ===============================================================
+// ======================= LISTAR MODAL SERVICIOS ===================================
+
+// Funcion Ver Datos Servicios Modal
+const verServicios = async (empleado) => {
+
+    await fetch(url+`/${empleado}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: { "Content-type": "application/json; charset=UTF-8" }
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const empleado = data.empleadoID; 
+        /* document.getElementById('txtID').value = empleado._id */
+        document.getElementById('txtSerNombres').value = empleado.nombres +' '+ empleado.apellidos
+        
+    })
+    .catch((error) => {
+        console.log('Error: ', error);
+    });
+  
+}
+
+// ======================= LISTAR MODAL ===================================
+
+// Funcion Ver Datos Empleados Modal
+const verModal = async (empleado) => {
+
+    await fetch(url+`/${empleado}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: { "Content-type": "application/json; charset=UTF-8" }
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const empleado = data.empleadoID; 
+        document.getElementById('txtID').value = empleado._id
+        document.getElementById('txtNombres').value = empleado.nombres
+        document.getElementById('txtApellidos').value = empleado.apellidos
+        document.getElementById('txtTelefono').value = empleado.telefono
+        document.getElementById('selDocumento').value = empleado.tipoDocumento
+        document.getElementById('txtNumDocumento').value = empleado.numeroDocumento
+        document.getElementById('txtGenero').value = empleado.genero
+        document.getElementById('txtDireccion').value = empleado.direccion
+    })
+    .catch((error) => {
+        console.log('Error: ', error);
+    });
+}
 
 
+// ======================= LISTAR DATOS EMPLEADOS ===================================
+
+// Funcion Ver Datos Empleados Modal
+const verEmpleados = async (idEmpleado) => {
+
+    await fetch(url+`/${idEmpleado}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {'Content-type': "aplication/json; charset=UTF-8"}
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const empleado = data.empleadoID;
+        console.log(empleado)
+        const fechaFormateada = empleado.fechaNacimiento.split('T')[0];
+        
+        /* document.getElementById('txtVerID').textContent = empleado._id */
+        document.getElementById('txtVerTipoDocumento').textContent = empleado.tipoDocumento
+        document.getElementById('txtVerNombres').textContent = empleado.nombres
+        document.getElementById('txtVerApellidos').textContent = empleado.apellidos
+        document.getElementById('txtVerTelefono').textContent = empleado.telefono
+        document.getElementById('txtVerNumDocumento').textContent = empleado.numeroDocumento
+        document.getElementById('txtVerFechaNacimiento').textContent = fechaFormateada
+        document.getElementById('txtVerGenero').textContent = empleado.genero
+        document.getElementById('txtVerDireccion').textContent = empleado.direccion
+
+    })
+    .catch((error) => {
+        console.log('Error: ',error)
+    })
+}
+
+// ======================= MODIFICAR ===================================
+
+// Funcion Modificar Empleados
 const modificarEmpleados = async () => {
 
     const campos = [
@@ -182,9 +272,11 @@ const modificarEmpleados = async () => {
             window.location.reload();
         });
     }
-
 }
 
+// ======================= ELIMINAR ===================================
+
+// Funcion Eliminar Empleados
 const eliminarEmpleados = (id) => {
         
     Swal.fire({
@@ -239,83 +331,12 @@ const eliminarEmpleados = (id) => {
     });
 };
 
-const verServicios = async (empleado) => {
-
-    await fetch(url+`/${empleado}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: { "Content-type": "application/json; charset=UTF-8" }
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        const empleado = data.empleadoID; 
-        /* document.getElementById('txtID').value = empleado._id */
-        document.getElementById('txtSerNombres').value = empleado.nombres +' '+ empleado.apellidos
-        
-    })
-    .catch((error) => {
-        console.log('Error: ', error);
-    });
-  
-}
-
-const verModal = async (empleado) => {
-
-    await fetch(url+`/${empleado}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: { "Content-type": "application/json; charset=UTF-8" }
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        const empleado = data.empleadoID; 
-        document.getElementById('txtID').value = empleado._id
-        document.getElementById('txtNombres').value = empleado.nombres
-        document.getElementById('txtApellidos').value = empleado.apellidos
-        document.getElementById('txtTelefono').value = empleado.telefono
-        document.getElementById('selDocumento').value = empleado.tipoDocumento
-        document.getElementById('txtNumDocumento').value = empleado.numeroDocumento
-        document.getElementById('txtGenero').value = empleado.genero
-        document.getElementById('txtDireccion').value = empleado.direccion
-    })
-    .catch((error) => {
-        console.log('Error: ', error);
-    });
-}
-
-const verEmpleados = async (idEmpleado) => {
-
-    await fetch(url+`/${idEmpleado}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {'Content-type': "aplication/json; charset=UTF-8"}
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        const empleado = data.empleadoID;
-        console.log(empleado)
-        const fechaFormateada = empleado.fechaNacimiento.split('T')[0];
-        
-        /* document.getElementById('txtVerID').textContent = empleado._id */
-        document.getElementById('txtVerTipoDocumento').textContent = empleado.tipoDocumento
-        document.getElementById('txtVerNombres').textContent = empleado.nombres
-        document.getElementById('txtVerApellidos').textContent = empleado.apellidos
-        document.getElementById('txtVerTelefono').textContent = empleado.telefono
-        document.getElementById('txtVerNumDocumento').textContent = empleado.numeroDocumento
-        document.getElementById('txtVerFechaNacimiento').textContent = fechaFormateada
-        document.getElementById('txtVerGenero').textContent = empleado.genero
-        document.getElementById('txtVerDireccion').textContent = empleado.direccion
-
-    })
-    .catch((error) => {
-        console.log('Error: ',error)
-    })
-}
 
 
-// ===================================================
 
-// Eventos JavaScript Empleados
+// ======================= EVENTOS ===================================
+
+// Eventos Botones Empleados
 
 document.addEventListener("DOMContentLoaded", function () {
 

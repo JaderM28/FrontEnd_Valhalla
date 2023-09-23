@@ -2,16 +2,20 @@
 import * as valid from '../validations/expresiones.mjs';
 import * as alert from '../validations/alertas.mjs';
 
+// Se crea la constante con la Url del API
 const url = 'https://backend-valhalla.onrender.com/ruta/usuarios';
 
+// ======================= LISTAR ===================================
+
+// Funcion Listar Usuarios
 const listarUsuarios = async () => {
     const tabla = $('#dataTable').DataTable({
 
         "bProcessing": true, // Habilita la pantalla de carga
-        "serverSide": false, // Puedes cambiar esto según tus necesidades
+        "serverSide": false, // Puedes cambiar esto segun tus necesidades
 
         "columns": [
-            { "data": "index" }, // Índice autoincremental
+            { "data": "index" }, // Indice autoincremental
             { "data": "username" },
             { "data": "correo" },
             { "data": "rol" },
@@ -27,81 +31,150 @@ const listarUsuarios = async () => {
         mode: 'cors',
         headers: { "Content-type": "application/json; charset=UTF-8" }
     })
-        .then((resp) => resp.json())
-        .then(function (data) {
-            const listaUsuarios = data.usuarios;
+    .then((resp) => resp.json())
+    .then(function (data) {
+        const listaUsuarios = data.usuarios;
 
-            // Agregar un índice autoincremental y fecha de registro a los datos
-            listaUsuarios.forEach((usuario, index) => {
-                usuario.index = index + 1;
-                usuario.fecha_registro = new Date().toLocaleDateString('es-ES');
-                if (usuario.estado) {
-                    usuario.estado =`<i class="fas fa-toggle-on fa-2x text-success" id="cambiar-estado" data-index="${usuario._id}" data-estado="${usuario.estado}"></i>`;
-                } else {
-                    usuario.estado =`<i class="fas fa-toggle-on fa-rotate-180 fa-2x text-danger" id="cambiar-estado" data-index="${usuario._id}" data-estado="${usuario.estado}"></i>`;
-                }
-
-                usuario.botones_accion = `
-                    <div class="text-center d-flex justify-content-around">
-                        <a href="#" class="btn btn-primary" id="btnUpdate" data-index="${usuario._id}" data-toggle="modal" data-target="#UpdateModal"><i class="fas fa-edit"></i></a>
-                        <a href="#" class="btn btn-danger" id="btnDelete" data-index="${usuario._id}"><i class="fas fa-trash-alt"></i></a>
-                        <a href="#" class="btn btn-warning" id="btnVer" data-index="${usuario._id}" data-toggle="modal" data-target="#ShowModal"><i class="fas fa-eye"></i></a>
-                    </div>
-                `;
-            });
-
-            tabla.clear().draw();
-            tabla.rows.add(listaUsuarios).draw();
-
-            // Evento Cambiar de Estado
-            tabla.on('click', '#cambiar-estado', function () {              
-                const userId = this.getAttribute('data-index');
-                let currentEstado = this.getAttribute('data-estado'); // Obtiene el atributo como cadena
-
-                // Compara la cadena con "true"
-                if (currentEstado === "true") {
-                    this.classList.remove('text-success');
-                    this.classList.add('fa-rotate-180', 'text-danger');
-                    currentEstado = "false"; // Establece la cadena "false"
-                } else {
-                    this.classList.remove('fa-rotate-180', 'text-danger');
-                    this.classList.add('text-success');
-                    currentEstado = "true"; // Establece la cadena "true"
-                }
-            
-                this.setAttribute('data-estado', currentEstado); // Actualiza el atributo data-estado
-                cambiarEstado(userId, currentEstado);
-            });
-            
-            // Evento Borrar Datos Usuarios
-            tabla.on('click', '#btnDelete', function () {
-                const button = this
-                const userID = button.getAttribute('data-index');
-                eliminarUsuarios(userID)
-            })
-
-            // Evento Modificar Datos Usuarios
-            tabla.on('click', '#btnUpdate', function () {
-                const button = this
-                const userID = button.getAttribute('data-index');
-                document.getElementById('formModificar').reset() 
-                verModalUsuarios(userID)
-            })
-
-            // Evento Ver Datos Usuarios
-            tabla.on('click', '#btnVer', function () {
-                const button = this
-                const userID = button.getAttribute('data-index');
-                document.getElementById('formModificar').reset()
-                verUsuarios(userID)
-            })
-        })
-        .catch(function (error) {
-            console.error('Error:', error);
+        // Agregar un indice autoincremental y fecha de registro a los datos
+        listaUsuarios.forEach((usuario, index) => {
+            usuario.index = index + 1;
+            usuario.fecha_registro = new Date().toLocaleDateString('es-ES');
+        //Se verifica el estado y se cambia al presionar el boton  
+            if (usuario.estado) {
+                usuario.estado =`<i class="fas fa-toggle-on fa-2x text-success" id="cambiar-estado" data-index="${usuario._id}" data-estado="${usuario.estado}"></i>`;
+            } else {
+                usuario.estado =`<i class="fas fa-toggle-on fa-rotate-180 fa-2x text-danger" id="cambiar-estado" data-index="${usuario._id}" data-estado="${usuario.estado}"></i>`;
+            }
+        //Se insertan los botones de acciones  
+            usuario.botones_accion = `
+                <div class="text-center d-flex justify-content-around">
+                    <a href="#" class="btn btn-primary" id="btnUpdate" data-index="${usuario._id}" data-toggle="modal" data-target="#UpdateModal"><i class="fas fa-edit"></i></a>
+                    <a href="#" class="btn btn-danger" id="btnDelete" data-index="${usuario._id}"><i class="fas fa-trash-alt"></i></a>
+                    <a href="#" class="btn btn-warning" id="btnVer" data-index="${usuario._id}" data-toggle="modal" data-target="#ShowModal"><i class="fas fa-eye"></i></a>
+                </div>
+            `;
         });
+
+        tabla.clear().draw();
+        tabla.rows.add(listaUsuarios).draw();
+
+        // Evento Cambiar de Estado
+        tabla.on('click', '#cambiar-estado', function () { 
+            Swal.fire({
+                title: '¿Está seguro de cambiar el estado?',
+                text: 'Se cambiara el estado del usuario seleccionado',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cambiar',
+                cancelButtonText: 'Cancelar',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const userId = this.getAttribute('data-index');
+                    let currentEstado = this.getAttribute('data-estado'); // Obtiene el atributo como cadena
+
+                    // Compara la cadena con "true"
+                    if (currentEstado === "true") {
+                        this.classList.remove('text-success');
+                        this.classList.add('fa-rotate-180', 'text-danger');
+                        currentEstado = "false"; // Establece la cadena "false"
+                    } else {
+                        this.classList.remove('fa-rotate-180', 'text-danger');
+                        this.classList.add('text-success');
+                        currentEstado = "true"; // Establece la cadena "true"
+                    }
+                
+                    this.setAttribute('data-estado', currentEstado); // Actualiza el atributo data-estado
+                    cambiarEstado(userId, currentEstado);
+                }
+            });             
+            
+        });
+        
+        // Evento Borrar Datos Usuarios
+        tabla.on('click', '#btnDelete', function () {
+            const button = this
+            const userID = button.getAttribute('data-index');
+            eliminarUsuarios(userID)
+        })
+
+        // Evento Modificar Datos Usuarios
+        tabla.on('click', '#btnUpdate', function () {
+            const button = this
+            const userID = button.getAttribute('data-index');
+            document.getElementById('formModificar').reset() 
+            verModalUsuarios(userID)
+        })
+
+        // Evento Ver Datos Usuarios
+        tabla.on('click', '#btnVer', function () {
+            const button = this
+            const userID = button.getAttribute('data-index');
+            document.getElementById('formModificar').reset()
+            verUsuarios(userID)
+        })
+    })
+    .catch(function (error) {
+        console.error('Error:', error);
+    });
 }
 
-// Función para cambiar el estado del usuario
+// ======================= LISTAR MODAL ===================================
+
+// Esta funcion permite Ver los datos 
+const verModalUsuarios = async (usuario) => {
+
+    await fetch(url+`/${usuario}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: { "Content-type": "application/json; charset=UTF-8" }
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const usuario = data.usuarioID; 
+        console.log(usuario)
+        document.getElementById('txtID').value = usuario._id;
+        document.getElementById('txtNombres').value = usuario.nombres;
+        document.getElementById('txtApellidos').value = usuario.apellidos;
+        document.getElementById('txtUsername').value = usuario.username;
+        document.getElementById('txtCorreo').value = usuario.correo;
+        document.getElementById('selRol').value = usuario.rol;
+    })
+    .catch((error) => {
+        console.log('Error: ', error);
+    });
+}
+
+// ======================= LISTAR DATOS ===================================
+
+// Esta funcion permite Ver la informacion los usuarios
+const verUsuarios = async (idUsuario) => {
+
+    await fetch(url+`/${idUsuario}`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {'Content-type': "aplication/json; charset=UTF-8"}
+    })
+    .then((resp) => resp.json())
+    .then((data) => {
+        const usuario = data.usuarioID;
+        console.log(usuario)
+  
+        /* document.getElementById('txtID').value = usuario._id; */
+        document.getElementById('txtVerNombres').textContent = usuario.nombres;
+        document.getElementById('txtVerApellidos').textContent = usuario.apellidos;
+        document.getElementById('txtVerUsername').textContent = usuario.username;
+        document.getElementById('txtVerCorreo').textContent = usuario.correo;
+        document.getElementById('selVerRol').textContent = usuario.rol;
+
+    })
+    .catch((error) => {
+        console.log('Error: ',error)
+    })
+}
+
+// ======================= CAMBIAR ESTADO ===================================
+
+// Funcion para cambiar el estado del usuario
 function cambiarEstado(userId, newEstado) {
 
     const usuarios = {
@@ -115,11 +188,15 @@ function cambiarEstado(userId, newEstado) {
         body: JSON.stringify(usuarios),
         headers: { 'Content-type': 'application/json; charset=UTF-8' },
     })
+    .catch((error) => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Se produjo un error al cambiar estado usuario.', 'error');
+    });
 }    
 
-// 
+// ======================= ELIMINAR ===================================
 
-// -------------------------------------------------
+// Esta funcion Eliminara los usuarios
 const eliminarUsuarios = (id) => {
 
     Swal.fire({
@@ -163,33 +240,9 @@ const eliminarUsuarios = (id) => {
     });
 };
 
-// ================================================================
+// ======================= CREAR ===================================
 
-const verModalUsuarios = async (usuario) => {
-
-    await fetch(url+`/${usuario}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: { "Content-type": "application/json; charset=UTF-8" }
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        const usuario = data.usuarioID; 
-        console.log(usuario)
-        document.getElementById('txtID').value = usuario._id;
-        document.getElementById('txtNombres').value = usuario.nombres;
-        document.getElementById('txtApellidos').value = usuario.apellidos;
-        document.getElementById('txtUsername').value = usuario.username;
-        document.getElementById('txtCorreo').value = usuario.correo;
-        document.getElementById('selRol').value = usuario.rol;
-    })
-    .catch((error) => {
-        console.log('Error: ', error);
-    });
-}
-
-// ==============================================================
-
+// Esta funcion permite Crear el usuario
 const crearUsuarios = async () => {
 
     const campos = [
@@ -232,6 +285,7 @@ const crearUsuarios = async () => {
         }
     ];
 
+    // Comprueba las validaciones
     if (!alert.validarCampos(campos)) {
         return;
     }
@@ -268,42 +322,42 @@ const crearUsuarios = async () => {
             body: JSON.stringify(usuario),
             headers: { 'Content-type': 'application/json; charset=UTF-8' },
         })
-            .then((resp) => resp.json())
-            .then((json) => {
-                if (json.msg) {
+        .then((resp) => resp.json())
+        .then((json) => {
+            if (json.msg) {
 
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: '¡Registro Exitoso!',
-                        text: json.msg,
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                    setTimeout(() => {
-                        window.location.href = '/listarUsuarios';
-                    }, 2000);
-                }
-            })
-            .catch((error) => {
-                
-                console.error('Error al registrar usuario:', error);
                 Swal.fire({
                     position: 'center',
-                    icon: 'error',
-                    title: '¡Error al Registrar Usuario!',
-                    text: 'No se pudo procesar la solicitud, Inténtelo nuevamente.',
+                    icon: 'success',
+                    title: '¡Registro Exitoso!',
+                    text: json.msg,
                     showConfirmButton: false,
                     timer: 1500
                 })
-                window.location.reload();
-            });
+                setTimeout(() => {
+                    window.location.href = '/listarUsuarios';
+                }, 2000);
+            }
+        })
+        .catch((error) => {
+            
+            console.error('Error al registrar usuario:', error);
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: '¡Error al Registrar Usuario!',
+                text: 'No se pudo procesar la solicitud, Inténtelo nuevamente.',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            window.location.reload();
+        });
     }
-
 }
 
-// ============================================================
+// ======================= MODIFICAR ===================================
 
+// Esta funcion permite modificar los usuarios
 const modificarUsuarios = async () => {
 
     const campos = [
@@ -353,86 +407,65 @@ const modificarUsuarios = async () => {
             body: JSON.stringify(usuarios),
             headers: { 'Content-type': 'application/json; charset=UTF-8' },
         })
-            .then((resp) => resp.json())
-            .then((json) => {
-                if (json.msg) {
+        .then((resp) => resp.json())
+        .then((json) => {
+            if (json.msg) {
 
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: '¡Modificación Exitosa!',
-                        text: json.msg,
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                    setTimeout(() => {
-                        window.location.href = '/listarUsuarios';
-                    }, 2000);
-                }
-            })
-            .catch((error) => {
-                
-                console.error('Error al registrar usuario:', error);
                 Swal.fire({
                     position: 'center',
-                    icon: 'error',
-                    title: '¡Error al Modificar Usuario!',
-                    text: 'No se pudo procesar la solicitud, Inténtelo nuevamente.',
+                    icon: 'success',
+                    title: '¡Modificación Exitosa!',
+                    text: json.msg,
                     showConfirmButton: false,
                     timer: 1500
                 })
-                window.location.reload();
-            });
+                setTimeout(() => {
+                    window.location.href = '/listarUsuarios';
+                }, 2000);
+            }
+        })
+        .catch((error) => {
+            
+            console.error('Error al registrar usuario:', error);
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: '¡Error al Modificar Usuario!',
+                text: 'No se pudo procesar la solicitud, Inténtelo nuevamente.',
+                showConfirmButton: false,
+                timer: 1500
+            })
+            window.location.reload();
+        });
     }
-
-}
-
-const verUsuarios = async (idUsuario) => {
-
-    await fetch(url+`/${idUsuario}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {'Content-type': "aplication/json; charset=UTF-8"}
-    })
-    .then((resp) => resp.json())
-    .then((data) => {
-        const usuario = data.usuarioID;
-        console.log(usuario)
-  
-        /* document.getElementById('txtID').value = usuario._id; */
-        document.getElementById('txtVerNombres').textContent = usuario.nombres;
-        document.getElementById('txtVerApellidos').textContent = usuario.apellidos;
-        document.getElementById('txtVerUsername').textContent = usuario.username;
-        document.getElementById('txtVerCorreo').textContent = usuario.correo;
-        document.getElementById('selVerRol').textContent = usuario.rol;
-
-    })
-    .catch((error) => {
-        console.log('Error: ',error)
-    })
 }
 
 
+// ======================= EVENTOS ===================================
 
+// Eventos Botones Usuarios
 document.addEventListener("DOMContentLoaded", function () {
 
     const PageUrl = window.location.href;
 
-    // Verificar si la URL contiene "listarusuarios"
+    // Comprueba la URL listar Usuarios
     if (PageUrl.includes("/listarUsuarios")) {
+        //Se llama funcion listar Usuarios
         listarUsuarios();
 
+        //Evento Resetear Formulario
         document.getElementById('btnMdReset').
         addEventListener('click', () => {
             document.getElementById('formModificar').reset()
         })
 
+        //Evento Confimrar Modificacion Datos 
         document.getElementById('btnMdGuardar').
         addEventListener('click', () => {
             modificarUsuarios()
         })
 
-
+        //Evento Generar Reporte
         document.getElementById('btnGenerar').
         addEventListener('click', (event) => {
             event.preventDefault()
@@ -461,19 +494,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    // Comprueba la URL Crear Usuarios
     if(PageUrl.includes("/crearUsuario")){
-
+        
+        //Evento Guardar Datos
         document.getElementById('btnGuardar').
         addEventListener('click', () => {
             crearUsuarios();
         })
 
+        //Evento Resetear Datos Formulario
         document.getElementById('btnReset').
         addEventListener('click', (event) => {
             event.preventDefault()
             document.getElementById('formModificar').reset()
         })
 
+        // Evento Salir del Formulario
         document.getElementById('btnCancelar').
         addEventListener('click', (event) => {
             event.preventDefault()
